@@ -2,4 +2,4 @@ spring:
   application:
     name: mini-project
   profiles:
-    active: viseth
+    active: huy

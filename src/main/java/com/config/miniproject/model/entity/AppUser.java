@@ -1,17 +1,16 @@
 package com.config.miniproject.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -21,15 +20,23 @@ import java.util.Collections;
 public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+    private Integer id;
     private String userName;
     private String email;
     private String address;
     private String phoneNumber;
     private String role;
     private String password;
-    private LocalDate created_at = LocalDate.now();
-    private LocalDate updated_at;
+    private LocalDateTime created_at = LocalDateTime.now();
+    private LocalDateTime updated_at;
+    @OneToMany(mappedBy = "user")
+    private List<Category> categories;
+    @OneToMany(mappedBy = "user")
+    private List<Article> articles;
+    @OneToMany(mappedBy = "user")
+    private List<Bookmark> bookmarks;
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("user"));

@@ -5,9 +5,9 @@ import com.config.miniproject.service.AppUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 @AllArgsConstructor
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
