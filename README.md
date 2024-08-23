@@ -1,4 +1,4 @@
-<h3 align="center">SPRING-JPA-MINI-PROJECT-G1</h3>
+<h3 align="center">SPRING-JPA-MINI-PROJECT-G2</h3>
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary><h2 style="display: inline-block">List of Members</h2></summary>
