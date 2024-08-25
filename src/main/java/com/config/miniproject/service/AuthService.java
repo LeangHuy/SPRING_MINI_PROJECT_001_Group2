@@ -10,4 +10,5 @@ public interface AuthService {
 
     AppUserResponse register(AppUserRequest appUserRequest, ERoles role);
     AuthResponse login(AuthRequest authRequest);
+    AppUserResponse updateCurrentUser(AppUserRequest appUserRequest, ERoles role);
 }

@@ -67,4 +67,14 @@ public class AppUserRequest {
                 createdAt, updateAt,
                 null, null, null, null);
     }
+
+    public AppUser toEntity(Integer id,String role) {
+        LocalDateTime updateAt = LocalDateTime.now();
+        LocalDateTime createdAt = LocalDateTime.now();
+        return new AppUser(id, this.userName,
+                this.email, this.address,
+                this.phone, role, this.password,
+                createdAt, updateAt,
+                null, null, null, null);
+    }
 }

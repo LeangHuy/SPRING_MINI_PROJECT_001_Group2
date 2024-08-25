@@ -12,6 +12,7 @@ import com.config.miniproject.model.entity.AppUser;
 import com.config.miniproject.model.enumaration.ERoles;
 import com.config.miniproject.repository.AppUserRepository;
 import com.config.miniproject.service.AuthService;
+import com.config.miniproject.utils.GetCurrentUser;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AppUserResponse register(AppUserRequest appUserRequest, ERoles role) {
         AppUser appUser = appUserRepository.findByEmail(appUserRequest.getEmail());
-        System.out.println(appUser);
         if (!appUserRequest.getPassword().equals(appUserRequest.getConfirmPassword())) {
             throw new BadRequestException("Your confirm password does not match with your password");
         }
@@ -45,6 +45,21 @@ public class AuthServiceImpl implements AuthService {
         AppUser appUser = appUserRepository.findByEmail(authRequest.getEmail());
         String token = jwtService.generateToken(appUser);
         return new AuthResponse(token);
+    }
+
+    @Override
+    public AppUserResponse updateCurrentUser(AppUserRequest appUserRequest, ERoles role) {
+        Integer userId = GetCurrentUser.userId();
+        appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
+        AppUser appUser = appUserRepository.findByEmail(appUserRequest.getEmail());
+        if (!appUserRequest.getPassword().equals(appUserRequest.getConfirmPassword())) {
+            throw new BadRequestException("Your confirm password does not match with your password");
+        }
+        if (appUser != null) {
+            throw new ConflictException("This email is already registered.");
+        }
+        appUserRequest.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
+        return appUserRepository.save(appUserRequest.toEntity(userId,role.name())).toResponse();
     }
 
     private void authenticate(String email, String password) {
