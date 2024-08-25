@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
 
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//        return appUserRepository.findByEmail(email);
-        return null;
+        return appUserRepository.findByEmail(email);
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.AppUserResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
+@ToString
 @Entity(name = "user_tb")
 public class AppUser implements UserDetails {
     @Id
@@ -27,7 +29,7 @@ public class AppUser implements UserDetails {
     private String phoneNumber;
     private String role;
     private String password;
-    private LocalDateTime created_at = LocalDateTime.now();
+    private LocalDateTime created_at;
     private LocalDateTime updated_at;
     @OneToMany(mappedBy = "user")
     private List<Category> categories;
@@ -40,6 +42,10 @@ public class AppUser implements UserDetails {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("user"));
+    }
+
+    public AppUserResponse toResponse() {
+        return new AppUserResponse(this.id,this.userName,this.email,this.address,this.phoneNumber,this.created_at,this.role);
     }
 
     @Override
