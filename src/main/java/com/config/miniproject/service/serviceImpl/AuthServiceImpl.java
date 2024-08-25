@@ -28,14 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     @Override
     public AppUserResponse register(AppUserRequest appUserRequest, ERoles role) {
-        AppUser appUser = appUserRepository.findByEmail(appUserRequest.getEmail());
-        if (!appUserRequest.getPassword().equals(appUserRequest.getConfirmPassword())) {
-            throw new BadRequestException("Your confirm password does not match with your password");
-        }
-        if (appUser != null) {
-            throw new ConflictException("This email is already registered.");
-        }
-        appUserRequest.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
+        checkEmailAndPassword(appUserRequest);
         return appUserRepository.save(appUserRequest.toEntity(role.name())).toResponse();
     }
 
@@ -51,6 +44,11 @@ public class AuthServiceImpl implements AuthService {
     public AppUserResponse updateCurrentUser(AppUserRequest appUserRequest, ERoles role) {
         Integer userId = GetCurrentUser.userId();
         appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
+        checkEmailAndPassword(appUserRequest);
+        return appUserRepository.save(appUserRequest.toEntity(userId,role.name())).toResponse();
+    }
+
+    private void checkEmailAndPassword(AppUserRequest appUserRequest) {
         AppUser appUser = appUserRepository.findByEmail(appUserRequest.getEmail());
         if (!appUserRequest.getPassword().equals(appUserRequest.getConfirmPassword())) {
             throw new BadRequestException("Your confirm password does not match with your password");
@@ -59,7 +57,6 @@ public class AuthServiceImpl implements AuthService {
             throw new ConflictException("This email is already registered.");
         }
         appUserRequest.setPassword(passwordEncoder.encode(appUserRequest.getPassword()));
-        return appUserRepository.save(appUserRequest.toEntity(userId,role.name())).toResponse();
     }
 
     private void authenticate(String email, String password) {
