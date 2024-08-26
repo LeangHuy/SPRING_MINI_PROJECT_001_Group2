@@ -28,7 +28,6 @@ public class ArticleServiceImpl implements ArticleService {
     private final CategoryRepository categoryRepository;
     private final CategoryArticleRepository categoryArticleRepository;
     private final CommentRepository commentRepository;
-    private final AppUserServiceImpl appUserServiceImpl;
 
     @Override
     public ArticleResponse createArticle(ArticleRequest articleRequest) {
@@ -128,6 +127,30 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleRepository.findById(articleId).orElseThrow();
         AppUser appUser = appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
         commentRepository.save(commentRequest.toEntity(article,appUser));
+        List<Comment> comment = commentRepository.findAllByArticle(article);
+        List<CommentWithArticleResponse> commentWithArticleResponses = comment.stream()
+                .map(c -> c.toCommentResponse(appUser.toResponse()))
+                .toList();
+        ArticleResponse articleResponse = new ArticleResponse();
+        List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
+        List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
+        articleResponse.setCategoryIdList(categoryIdList);
+        articleResponse.setArticleId(findArticleById.getArticleId());
+        articleResponse.setTitle(findArticleById.getTitle());
+        articleResponse.setDescription(findArticleById.getDescription());
+        articleResponse.setCreatedAt(findArticleById.getCreatedAt());
+        articleResponse.setUpdatedAt(findArticleById.getCreatedAt());
+        articleResponse.setOwnerOfArticle(findArticleById.getOwnerOfArticle());
+        articleResponse.setCommentList(commentWithArticleResponses);
+        return articleResponse;
+    }
+
+    @Override
+    public ArticleResponse getCommentByArticleId(Integer articleId) {
+        Integer userId = GetCurrentUser.userId();
+        ArticleResponse findArticleById = getArticleById(articleId);
+        Article article = articleRepository.findById(articleId).orElseThrow();
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
         List<Comment> comment = commentRepository.findAllByArticle(article);
         List<CommentWithArticleResponse> commentWithArticleResponses = comment.stream()
                 .map(c -> c.toCommentResponse(appUser.toResponse()))

@@ -16,4 +16,5 @@ public interface ArticleService {
     ArticleResponse getArticleById(Integer articleId);
     void deleteArticleById(Integer articleId);
     ArticleResponse createCommentByArticleId(Integer userId, Integer articleId, CommentRequest commentRequest);
+    ArticleResponse getCommentByArticleId(Integer articleId);
 }

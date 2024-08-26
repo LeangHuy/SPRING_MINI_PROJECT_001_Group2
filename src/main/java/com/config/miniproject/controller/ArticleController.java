@@ -3,6 +3,7 @@ package com.config.miniproject.controller;
 import com.config.miniproject.model.dto.request.ArticleRequest;
 import com.config.miniproject.model.dto.request.CommentRequest;
 import com.config.miniproject.model.dto.response.ArticleResponse;
+import com.config.miniproject.model.dto.response.CommentResponse;
 import com.config.miniproject.model.enumaration.EArticle;
 import com.config.miniproject.service.ArticleService;
 import com.config.miniproject.utils.ApiResponse;
@@ -109,5 +110,18 @@ public class ArticleController {
                 .timestamp(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/article/{articleId}/comment")
+    @Operation(summary = "Get comments on any article.")
+    public ResponseEntity<ApiResponse<ArticleResponse>> getCommentByArticleId(@PathVariable Integer articleId) {
+        ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
+                .message("Get all comments on article id " + articleId + " successfully.")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .payload(articleService.getCommentByArticleId(articleId))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
