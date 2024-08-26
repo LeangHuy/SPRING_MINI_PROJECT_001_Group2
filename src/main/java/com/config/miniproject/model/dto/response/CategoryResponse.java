@@ -19,8 +19,5 @@ import java.util.List;
 public class CategoryResponse {
     private Integer id;
     private String categoryName;
-    private Integer amountOfArticle;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt;
-    private List<CategoryArticle> categoryArticles; ;
 }
