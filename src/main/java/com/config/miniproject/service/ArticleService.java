@@ -14,4 +14,5 @@ public interface ArticleService {
     List<ArticleWithCommentResponse> getAllArticles(int page, int size, EArticle sortBy, Sort.Direction sortDirection) ;
     ArticleWithCommentResponse updateArticleById(Integer articleId, ArticleRequest articleRequest);
     ArticleWithCommentResponse getArticleById(Integer articleId);
+    void deleteArticleById(Integer articleId);
 }

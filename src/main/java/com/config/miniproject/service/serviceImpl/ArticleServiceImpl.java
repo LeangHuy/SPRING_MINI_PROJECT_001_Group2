@@ -114,6 +114,18 @@ public class ArticleServiceImpl implements ArticleService {
         return articleWithCommentResponse;
     }
 
+    @Override
+    public void deleteArticleById(Integer articleId) {
+        Integer userId = GetCurrentUser.userId();
+        checkRole(userId,"You are not allowed to delete articles.");
+        ArticleWithCommentResponse articleResponse = getArticleById(articleId);
+        if (!articleResponse.getOwnerOfArticle().equals(userId)){
+            throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
+        }
+        getArticleById(articleId);
+        articleRepository.deleteById(articleId);
+    }
+
     public void checkRole(Integer userId,String message){
         AppUser user = appUserRepository.findById(userId).orElseThrow(()->new NotFoundException("User Not Found."));
         if (user.getRole().equalsIgnoreCase("READER")){

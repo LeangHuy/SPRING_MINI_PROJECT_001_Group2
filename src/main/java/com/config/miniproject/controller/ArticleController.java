@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +78,19 @@ public class ArticleController {
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
                 .payload(articleService.updateArticleById(articleId,articleRequest))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/author/article/{articleId}")
+    @Operation(summary = "Delete article by id.")
+    public ResponseEntity<ApiResponse<ArticleWithCommentResponse>> deleteArticleById(@PathVariable Integer articleId) {
+        articleService.deleteArticleById(articleId);
+        ApiResponse<ArticleWithCommentResponse> response =  ApiResponse.<ArticleWithCommentResponse>builder()
+                .message("Delete article with id "+articleId+" successfully.")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
                 .timestamp(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
