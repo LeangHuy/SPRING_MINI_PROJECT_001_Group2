@@ -3,17 +3,11 @@ package com.config.miniproject.service.serviceImpl;
 import com.config.miniproject.exception.ForbiddenException;
 import com.config.miniproject.exception.NotFoundException;
 import com.config.miniproject.model.dto.request.ArticleRequest;
-import com.config.miniproject.model.dto.response.ArticleResponse;
-import com.config.miniproject.model.dto.response.CategoryArticleResponse;
-import com.config.miniproject.model.entity.AppUser;
-import com.config.miniproject.model.entity.Article;
-import com.config.miniproject.model.entity.Category;
-import com.config.miniproject.model.entity.CategoryArticle;
+import com.config.miniproject.model.dto.request.CommentRequest;
+import com.config.miniproject.model.dto.response.*;
+import com.config.miniproject.model.entity.*;
 import com.config.miniproject.model.enumaration.EArticle;
-import com.config.miniproject.repository.AppUserRepository;
-import com.config.miniproject.repository.ArticleRepository;
-import com.config.miniproject.repository.CategoryArticleRepository;
-import com.config.miniproject.repository.CategoryRepository;
+import com.config.miniproject.repository.*;
 import com.config.miniproject.service.ArticleService;
 import com.config.miniproject.utils.GetCurrentUser;
 import lombok.AllArgsConstructor;
@@ -33,6 +27,9 @@ public class ArticleServiceImpl implements ArticleService {
     private final AppUserRepository appUserRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryArticleRepository categoryArticleRepository;
+    private final CommentRepository commentRepository;
+    private final AppUserServiceImpl appUserServiceImpl;
+
     @Override
     public ArticleResponse createArticle(ArticleRequest articleRequest) {
         Integer userId = GetCurrentUser.userId();
@@ -123,6 +120,30 @@ public class ArticleServiceImpl implements ArticleService {
         }
         getArticleById(articleId);
         articleRepository.deleteById(articleId);
+    }
+
+    @Override
+    public ArticleResponse createCommentByArticleId(Integer userId, Integer articleId, CommentRequest commentRequest) {
+        ArticleResponse findArticleById = getArticleById(articleId);
+        Article article = articleRepository.findById(articleId).orElseThrow();
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
+        commentRepository.save(commentRequest.toEntity(article,appUser));
+        List<Comment> comment = commentRepository.findAllByArticle(article);
+        List<CommentWithArticleResponse> commentWithArticleResponses = comment.stream()
+                .map(c -> c.toCommentResponse(appUser.toResponse()))
+                .toList();
+        ArticleResponse articleResponse = new ArticleResponse();
+        List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
+        List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
+        articleResponse.setCategoryIdList(categoryIdList);
+        articleResponse.setArticleId(findArticleById.getArticleId());
+        articleResponse.setTitle(findArticleById.getTitle());
+        articleResponse.setDescription(findArticleById.getDescription());
+        articleResponse.setCreatedAt(findArticleById.getCreatedAt());
+        articleResponse.setUpdatedAt(findArticleById.getCreatedAt());
+        articleResponse.setOwnerOfArticle(findArticleById.getOwnerOfArticle());
+        articleResponse.setCommentList(commentWithArticleResponses);
+        return articleResponse;
     }
 
     public void checkRole(Integer userId,String message){

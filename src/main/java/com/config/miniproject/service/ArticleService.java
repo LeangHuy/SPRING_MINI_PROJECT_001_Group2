@@ -1,6 +1,7 @@
 package com.config.miniproject.service;
 
 import com.config.miniproject.model.dto.request.ArticleRequest;
+import com.config.miniproject.model.dto.request.CommentRequest;
 import com.config.miniproject.model.dto.response.ArticleResponse;
 import com.config.miniproject.model.enumaration.EArticle;
 import org.springframework.data.domain.Sort;
@@ -14,4 +15,5 @@ public interface ArticleService {
     ArticleResponse updateArticleById(Integer articleId, ArticleRequest articleRequest);
     ArticleResponse getArticleById(Integer articleId);
     void deleteArticleById(Integer articleId);
+    ArticleResponse createCommentByArticleId(Integer userId, Integer articleId, CommentRequest commentRequest);
 }

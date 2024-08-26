@@ -1,10 +1,12 @@
 package com.config.miniproject.controller;
 
 import com.config.miniproject.model.dto.request.ArticleRequest;
+import com.config.miniproject.model.dto.request.CommentRequest;
 import com.config.miniproject.model.dto.response.ArticleResponse;
 import com.config.miniproject.model.enumaration.EArticle;
 import com.config.miniproject.service.ArticleService;
 import com.config.miniproject.utils.ApiResponse;
+import com.config.miniproject.utils.GetCurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -45,12 +47,12 @@ public class ArticleController {
             @Positive(message = "Limit cannot be negative or zero") @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam EArticle sortBy,
             @RequestParam Sort.Direction sortDirection
-            ) {
+    ) {
         ApiResponse<List<ArticleResponse>> response = ApiResponse.<List<ArticleResponse>>builder()
                 .message("Get all articles successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
-                .payload(articleService.getAllArticles(pageNo,pageSize,sortBy,sortDirection))
+                .payload(articleService.getAllArticles(pageNo, pageSize, sortBy, sortDirection))
                 .timestamp(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,9 +60,9 @@ public class ArticleController {
 
     @GetMapping("/article/{articleId}")
     @Operation(summary = "Get article by id.")
-    public ResponseEntity<ApiResponse<ArticleResponse>> getArticleById(@PathVariable Integer articleId){
+    public ResponseEntity<ApiResponse<ArticleResponse>> getArticleById(@PathVariable Integer articleId) {
         ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
-                .message("Get article with id "+articleId+" successfully.")
+                .message("Get article with id " + articleId + " successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
                 .payload(articleService.getArticleById(articleId))
@@ -73,10 +75,10 @@ public class ArticleController {
     @Operation(summary = "Edit article by id.")
     public ResponseEntity<ApiResponse<ArticleResponse>> updateArticleById(@Valid @RequestBody ArticleRequest articleRequest, @PathVariable Integer articleId) {
         ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
-                .message("Update article with id "+articleId+" successfully.")
+                .message("Update article with id " + articleId + " successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
-                .payload(articleService.updateArticleById(articleId,articleRequest))
+                .payload(articleService.updateArticleById(articleId, articleRequest))
                 .timestamp(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -86,12 +88,26 @@ public class ArticleController {
     @Operation(summary = "Delete article by id.")
     public ResponseEntity<ApiResponse<ArticleResponse>> deleteArticleById(@PathVariable Integer articleId) {
         articleService.deleteArticleById(articleId);
-        ApiResponse<ArticleResponse> response =  ApiResponse.<ArticleResponse>builder()
-                .message("Delete article with id "+articleId+" successfully.")
+        ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
+                .message("Delete article with id " + articleId + " successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
                 .timestamp(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/article/{articleId}/comment")
+    @Operation(summary = "Post a comment on any article via its id.")
+    public ResponseEntity<ApiResponse<ArticleResponse>> createComment(@PathVariable Integer articleId, @Valid @RequestBody CommentRequest commentRequest) {
+        Integer userId = GetCurrentUser.userId();
+        ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
+                .message("A new comment is posted on article " + articleId + " by user " + userId)
+                .status(HttpStatus.CREATED)
+                .statusCode(HttpStatus.CREATED.value())
+                .payload(articleService.createCommentByArticleId(userId, articleId, commentRequest))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
