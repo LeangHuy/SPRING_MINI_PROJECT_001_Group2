@@ -1,7 +1,6 @@
 package com.config.miniproject.controller;
 
-import com.config.miniproject.model.dto.ApiDeleteResponse;
-import com.config.miniproject.model.dto.ApiResponse;
+import com.config.miniproject.utils.ApiResponse;
 import com.config.miniproject.model.dto.request.CategoryRequest;
 import com.config.miniproject.model.dto.response.CategoryResponse;
 import com.config.miniproject.service.CategoryService;
@@ -78,9 +77,9 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiDeleteResponse<String>> deleteCategory(@PathVariable("id") Integer id) {
+    public ResponseEntity<ApiResponse<String>> deleteCategory(@PathVariable("id") Integer id) {
         categoryService.deleteCategory(id);
-        ApiDeleteResponse<String> apiResponse = ApiDeleteResponse.<String>builder()
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .message("Category with id " + id + " is deleted successfully.")
                 .status(HttpStatus.OK)
                 .build();
