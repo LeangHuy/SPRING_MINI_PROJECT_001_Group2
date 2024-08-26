@@ -4,7 +4,6 @@ import com.config.miniproject.exception.ForbiddenException;
 import com.config.miniproject.exception.NotFoundException;
 import com.config.miniproject.model.dto.request.ArticleRequest;
 import com.config.miniproject.model.dto.response.ArticleResponse;
-import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
 import com.config.miniproject.model.dto.response.CategoryArticleResponse;
 import com.config.miniproject.model.entity.AppUser;
 import com.config.miniproject.model.entity.Article;
@@ -50,37 +49,37 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<ArticleWithCommentResponse> getAllArticles(int page, int size, EArticle sortBy, Sort.Direction sortDirection) {
+    public List<ArticleResponse> getAllArticles(int page, int size, EArticle sortBy, Sort.Direction sortDirection) {
         Sort sort = Sort.by(sortDirection,sortBy.name());
         Pageable pageable = PageRequest.of(page-1, size, sort);
         List<ArticleResponse> articles = articleRepository.findAll(pageable).getContent().stream().map(Article::toResponse).toList();
-        List<ArticleWithCommentResponse> articleWithCommentResponseList = new ArrayList<>();
+        List<ArticleResponse> articleResponseList = new ArrayList<>();
         for (ArticleResponse article : articles) {
             List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(article.getArticleId()).stream().map(CategoryArticle::toResponse).toList();
-            ArticleWithCommentResponse articleWithCommentResponse = new ArticleWithCommentResponse();
+            ArticleResponse articleResponse = new ArticleResponse();
             List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
-            articleWithCommentResponse.setCategoryIdList(categoryIdList);
-            articleWithCommentResponse.setArticleId(article.getArticleId());
-            articleWithCommentResponse.setTitle(article.getTitle());
-            articleWithCommentResponse.setDescription(article.getDescription());
-            articleWithCommentResponse.setCreatedAt(article.getCreatedAt());
-            articleWithCommentResponse.setOwnerOfArticle(article.getOwnerOfArticle());
-            articleWithCommentResponseList.add(articleWithCommentResponse);
+            articleResponse.setCategoryIdList(categoryIdList);
+            articleResponse.setArticleId(article.getArticleId());
+            articleResponse.setTitle(article.getTitle());
+            articleResponse.setDescription(article.getDescription());
+            articleResponse.setCreatedAt(article.getCreatedAt());
+            articleResponse.setOwnerOfArticle(article.getOwnerOfArticle());
+            articleResponseList.add(articleResponse);
         }
-        return articleWithCommentResponseList;
+        return articleResponseList;
     }
 
     @Override
-    public ArticleWithCommentResponse updateArticleById(Integer articleId, ArticleRequest articleRequest) {
-        ArticleWithCommentResponse  articleWithCommentResponse =  new ArticleWithCommentResponse();
+    public ArticleResponse updateArticleById(Integer articleId, ArticleRequest articleRequest) {
+        ArticleResponse  articleResponse =  new ArticleResponse();
         Integer userId = GetCurrentUser.userId();
         AppUser user = appUserRepository.findById(userId).orElseThrow(()->new NotFoundException("User Not Found."));
         checkRole(userId,"You are not allowed to edit articles.");
-        ArticleWithCommentResponse articleResponse = getArticleById(articleId);
-        if (!articleResponse.getOwnerOfArticle().equals(userId)){
+        ArticleResponse articleById = getArticleById(articleId);
+        if (!articleById.getOwnerOfArticle().equals(userId)){
             throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
         }
-        Article article = articleRepository.save(articleRequest.toEntity(articleId,user,articleResponse.getCreatedAt()));
+        Article article = articleRepository.save(articleRequest.toEntity(articleId,user,articleById.getCreatedAt()));
         categoryArticleRepository.deleteAllByArticle(article);
         for (Integer categoryId : articleRequest.getCategoryId()) {
             Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
@@ -90,35 +89,35 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleResponse articleResponse1 = article.toResponse();
         List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
         List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
-        articleWithCommentResponse.setCategoryIdList(categoryIdList);
-        articleWithCommentResponse.setArticleId(article.getId());
-        articleWithCommentResponse.setTitle(article.getTitle());
-        articleWithCommentResponse.setDescription(article.getDescription());
-        articleWithCommentResponse.setCreatedAt(article.getCreatedAt());
-        articleWithCommentResponse.setOwnerOfArticle(articleResponse1.getOwnerOfArticle());
-        return articleWithCommentResponse;
+        articleResponse.setCategoryIdList(categoryIdList);
+        articleResponse.setArticleId(article.getId());
+        articleResponse.setTitle(article.getTitle());
+        articleResponse.setDescription(article.getDescription());
+        articleResponse.setCreatedAt(article.getCreatedAt());
+        articleResponse.setOwnerOfArticle(articleResponse1.getOwnerOfArticle());
+        return articleResponse;
     }
 
     @Override
-    public ArticleWithCommentResponse getArticleById(Integer articleId) {
+    public ArticleResponse getArticleById(Integer articleId) {
         ArticleResponse articleResponse = articleRepository.findById(articleId).orElseThrow(()->new NotFoundException("Article id "+articleId+" not found.")).toResponse();
         List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
-        ArticleWithCommentResponse articleWithCommentResponse = new ArticleWithCommentResponse();
         List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
-        articleWithCommentResponse.setCategoryIdList(categoryIdList);
-        articleWithCommentResponse.setArticleId(articleResponse.getArticleId());
-        articleWithCommentResponse.setTitle(articleResponse.getTitle());
-        articleWithCommentResponse.setDescription(articleResponse.getDescription());
-        articleWithCommentResponse.setCreatedAt(articleResponse.getCreatedAt());
-        articleWithCommentResponse.setOwnerOfArticle(articleResponse.getOwnerOfArticle());
-        return articleWithCommentResponse;
+        articleResponse.setCategoryIdList(categoryIdList);
+        articleResponse.setArticleId(articleResponse.getArticleId());
+        articleResponse.setTitle(articleResponse.getTitle());
+        articleResponse.setDescription(articleResponse.getDescription());
+        articleResponse.setCreatedAt(articleResponse.getCreatedAt());
+        articleResponse.setUpdatedAt(articleResponse.getCreatedAt());
+        articleResponse.setOwnerOfArticle(articleResponse.getOwnerOfArticle());
+        return articleResponse;
     }
 
     @Override
     public void deleteArticleById(Integer articleId) {
         Integer userId = GetCurrentUser.userId();
         checkRole(userId,"You are not allowed to delete articles.");
-        ArticleWithCommentResponse articleResponse = getArticleById(articleId);
+        ArticleResponse articleResponse = getArticleById(articleId);
         if (!articleResponse.getOwnerOfArticle().equals(userId)){
             throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
         }

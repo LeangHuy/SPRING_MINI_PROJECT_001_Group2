@@ -2,7 +2,6 @@ package com.config.miniproject.controller;
 
 import com.config.miniproject.model.dto.request.ArticleRequest;
 import com.config.miniproject.model.dto.response.ArticleResponse;
-import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
 import com.config.miniproject.model.enumaration.EArticle;
 import com.config.miniproject.service.ArticleService;
 import com.config.miniproject.utils.ApiResponse;
@@ -41,13 +40,13 @@ public class ArticleController {
 
     @GetMapping("/articles/all")
     @Operation(summary = "Get all article.")
-    public ResponseEntity<ApiResponse<List<ArticleWithCommentResponse>>> getAllArticle(
+    public ResponseEntity<ApiResponse<List<ArticleResponse>>> getAllArticle(
             @Positive(message = "Offset cannot be negative or zero") @RequestParam(defaultValue = "1") Integer pageNo,
             @Positive(message = "Limit cannot be negative or zero") @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam EArticle sortBy,
             @RequestParam Sort.Direction sortDirection
             ) {
-        ApiResponse<List<ArticleWithCommentResponse>> response = ApiResponse.<List<ArticleWithCommentResponse>>builder()
+        ApiResponse<List<ArticleResponse>> response = ApiResponse.<List<ArticleResponse>>builder()
                 .message("Get all articles successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
@@ -59,8 +58,8 @@ public class ArticleController {
 
     @GetMapping("/article/{articleId}")
     @Operation(summary = "Get article by id.")
-    public ResponseEntity<ApiResponse<ArticleWithCommentResponse>> getArticleById(@PathVariable Integer articleId){
-        ApiResponse<ArticleWithCommentResponse> response = ApiResponse.<ArticleWithCommentResponse>builder()
+    public ResponseEntity<ApiResponse<ArticleResponse>> getArticleById(@PathVariable Integer articleId){
+        ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
                 .message("Get article with id "+articleId+" successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
@@ -72,8 +71,8 @@ public class ArticleController {
 
     @PutMapping("/author/article/{articleId}")
     @Operation(summary = "Edit article by id.")
-    public ResponseEntity<ApiResponse<ArticleWithCommentResponse>> updateArticleById(@Valid @RequestBody ArticleRequest articleRequest, @PathVariable Integer articleId) {
-        ApiResponse<ArticleWithCommentResponse> response = ApiResponse.<ArticleWithCommentResponse>builder()
+    public ResponseEntity<ApiResponse<ArticleResponse>> updateArticleById(@Valid @RequestBody ArticleRequest articleRequest, @PathVariable Integer articleId) {
+        ApiResponse<ArticleResponse> response = ApiResponse.<ArticleResponse>builder()
                 .message("Update article with id "+articleId+" successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
@@ -85,9 +84,9 @@ public class ArticleController {
 
     @DeleteMapping("/author/article/{articleId}")
     @Operation(summary = "Delete article by id.")
-    public ResponseEntity<ApiResponse<ArticleWithCommentResponse>> deleteArticleById(@PathVariable Integer articleId) {
+    public ResponseEntity<ApiResponse<ArticleResponse>> deleteArticleById(@PathVariable Integer articleId) {
         articleService.deleteArticleById(articleId);
-        ApiResponse<ArticleWithCommentResponse> response =  ApiResponse.<ArticleWithCommentResponse>builder()
+        ApiResponse<ArticleResponse> response =  ApiResponse.<ArticleResponse>builder()
                 .message("Delete article with id "+articleId+" successfully.")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())

@@ -1,7 +1,6 @@
 package com.config.miniproject.model.entity;
 
 import com.config.miniproject.model.dto.response.ArticleResponse;
-import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +34,10 @@ public class Article {
     private List<Comment> comments;
 
     public ArticleResponse toResponse(){
-        return new ArticleResponse(this.id, this.title, this.description, this.createdAt, this.user.getId());
+        return new ArticleResponse(this.id, this.title,
+                this.description, this.createdAt, this.user.getId(),
+                null,null,null
+                );
     }
 
 }
