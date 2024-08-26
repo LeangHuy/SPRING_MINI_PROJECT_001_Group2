@@ -1,5 +1,6 @@
 package com.config.miniproject.service.serviceImpl;
 
+import com.config.miniproject.exception.BadRequestException;
 import com.config.miniproject.exception.ForbiddenException;
 import com.config.miniproject.exception.NotFoundException;
 import com.config.miniproject.model.dto.request.CategoryRequest;
@@ -10,7 +11,9 @@ import com.config.miniproject.repository.AppUserRepository;
 import com.config.miniproject.repository.CategoryRepository;
 import com.config.miniproject.service.CategoryService;
 import com.config.miniproject.utils.GetCurrentUser;
+import com.config.miniproject.utils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,14 +33,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse createCategory(CategoryRequest categoryRequest) {
 
-        Integer userId = GetCurrentUser.userId();
-        AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
-
-        if (user.getRole().equalsIgnoreCase("READER")) {
-            throw new ForbiddenException("You don't have permission");
+        UserUtils userUtils = new UserUtils(appUserRepository);
+        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
+        boolean exists = categoryRepository.existsByCategoryName(categoryRequest.getCategoryName());
+        if (exists) {
+            throw new BadRequestException("Category name already exists.");
         }
-
-        return categoryRepository.save(categoryRequest.toEntity()).toResponse();
+        CategoryResponse categoryResponse = categoryRepository.save(categoryRequest.toEntity(user)).toResponse();
+        categoryResponse.setCreatedAt(LocalDateTime.now());
+        return categoryResponse;
     }
 
     @Override
@@ -45,22 +50,27 @@ public class CategoryServiceImpl implements CategoryService {
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Category> categoryPage = categoryRepository.findAll(pageable);
 
+        UserUtils userUtils = new UserUtils(appUserRepository);
+        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
+
         return categoryPage.getContent().stream().map(Category::toResponse).toList();
     }
 
     @Override
     public CategoryResponse getCategoryById(Integer id) {
-        Integer userId = GetCurrentUser.userId();
-        AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
 
-        if (user.getRole().equalsIgnoreCase("READER")) {
-            throw new ForbiddenException("You don't have permission");
-        }
+        UserUtils userUtils = new UserUtils(appUserRepository);
+        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
+
         return categoryRepository.findById(id).orElseThrow().toResponse();
     }
 
     @Override
     public CategoryResponse updateCategory(Integer id, CategoryRequest categoryRequest) {
+
+        UserUtils userUtils = new UserUtils(appUserRepository);
+        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
+
         Category editCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
 
@@ -74,12 +84,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Integer id) {
 
-        Integer userId = GetCurrentUser.userId();
-        AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
-
-        if (user.getRole().equalsIgnoreCase("READER")) {
-            throw new ForbiddenException("You don't have permission");
-        }
+        UserUtils userUtils = new UserUtils(appUserRepository);
+        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found"));

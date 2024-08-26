@@ -1,5 +1,6 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.CommentResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,4 +23,8 @@ public class Comment {
     private Article article;
     @ManyToOne
     private AppUser user;
+
+    public CommentResponse toResponse() {
+        return new CommentResponse(this.id, this.cmt, this.createdAt, this.updatedAt, this.article, this.user);
+    }
 }
