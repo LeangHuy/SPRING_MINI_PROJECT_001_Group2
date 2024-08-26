@@ -46,13 +46,21 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleResponse> getAllArticles(int page, int size, EArticle sortBy, Sort.Direction sortDirection) {
+        Integer userId = GetCurrentUser.userId();
         Sort sort = Sort.by(sortDirection,sortBy.name());
         Pageable pageable = PageRequest.of(page-1, size, sort);
         List<ArticleResponse> articles = articleRepository.findAll(pageable).getContent().stream().map(Article::toResponse).toList();
         List<ArticleResponse> articleResponseList = new ArrayList<>();
+
         for (ArticleResponse article : articles) {
             List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(article.getArticleId()).stream().map(CategoryArticle::toResponse).toList();
             ArticleResponse articleResponse = new ArticleResponse();
+            Article articleC = articleRepository.findById(article.getArticleId()).orElseThrow();
+            AppUser appUser = appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
+            List<Comment> comment = commentRepository.findAllByArticle(articleC);
+            List<CommentWithArticleResponse> commentWithArticleResponses = comment.stream()
+                    .map(c -> c.toCommentResponse(appUser.toResponse()))
+                    .toList();
             List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
             articleResponse.setCategoryIdList(categoryIdList);
             articleResponse.setArticleId(article.getArticleId());
@@ -60,6 +68,7 @@ public class ArticleServiceImpl implements ArticleService {
             articleResponse.setDescription(article.getDescription());
             articleResponse.setCreatedAt(article.getCreatedAt());
             articleResponse.setOwnerOfArticle(article.getOwnerOfArticle());
+            articleResponse.setCommentList(commentWithArticleResponses);
             articleResponseList.add(articleResponse);
         }
         return articleResponseList;
@@ -83,6 +92,12 @@ public class ArticleServiceImpl implements ArticleService {
             categoryArticleRepository.save(categoryArticle);
         }
         ArticleResponse articleResponse1 = article.toResponse();
+        Article articleC = articleRepository.findById(articleId).orElseThrow();
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
+        List<Comment> comment = commentRepository.findAllByArticle(articleC);
+        List<CommentWithArticleResponse> commentWithArticleResponses = comment.stream()
+                .map(c -> c.toCommentResponse(appUser.toResponse()))
+                .toList();
         List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
         List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
         articleResponse.setCategoryIdList(categoryIdList);
@@ -91,21 +106,26 @@ public class ArticleServiceImpl implements ArticleService {
         articleResponse.setDescription(article.getDescription());
         articleResponse.setCreatedAt(article.getCreatedAt());
         articleResponse.setOwnerOfArticle(articleResponse1.getOwnerOfArticle());
+        articleResponse.setCommentList(commentWithArticleResponses);
         return articleResponse;
     }
 
     @Override
     public ArticleResponse getArticleById(Integer articleId) {
+        Integer userId = GetCurrentUser.userId();
         ArticleResponse articleResponse = articleRepository.findById(articleId).orElseThrow(()->new NotFoundException("Article id "+articleId+" not found.")).toResponse();
         List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
         List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
+        Article articleC = articleRepository.findById(articleId).orElseThrow();
+        AppUser appUser = appUserRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found."));
+        List<Comment> comment = commentRepository.findAllByArticle(articleC);
+        List<CommentWithArticleResponse> commentWithArticleResponses = comment.stream()
+                .map(c -> c.toCommentResponse(appUser.toResponse()))
+                .toList();
         articleResponse.setCategoryIdList(categoryIdList);
-        articleResponse.setArticleId(articleResponse.getArticleId());
-        articleResponse.setTitle(articleResponse.getTitle());
-        articleResponse.setDescription(articleResponse.getDescription());
-        articleResponse.setCreatedAt(articleResponse.getCreatedAt());
-        articleResponse.setUpdatedAt(articleResponse.getCreatedAt());
         articleResponse.setOwnerOfArticle(articleResponse.getOwnerOfArticle());
+        articleResponse.setUpdatedAt(articleResponse.getUpdatedAt());
+        articleResponse.setCommentList(commentWithArticleResponses);
         return articleResponse;
     }
 

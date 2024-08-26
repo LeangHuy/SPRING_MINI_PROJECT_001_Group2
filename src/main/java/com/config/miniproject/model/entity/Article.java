@@ -23,13 +23,13 @@ public class Article {
     private LocalDateTime updatedAt;
     @ManyToOne
     private AppUser user;
-    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany
     @ToString.Exclude
     private List<CategoryArticle> categoryArticles;
-    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany
     @ToString.Exclude
     private List<Bookmark> bookmarks;
-    @OneToMany(mappedBy = "article",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany
     @ToString.Exclude
     private List<Comment> comments;
 
