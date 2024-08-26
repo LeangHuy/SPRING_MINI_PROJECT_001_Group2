@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @RequestMapping("api/v1/auths")
 @AllArgsConstructor
 @CrossOrigin
-public class AuthController {
+public class    AuthController {
 
     private final AuthService authService;
 
