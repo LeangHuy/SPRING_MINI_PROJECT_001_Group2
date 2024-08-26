@@ -1,5 +1,6 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.CategoryResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,9 @@ public class Category {
     @ManyToOne
     private AppUser user;
     @OneToMany(mappedBy = "category")
-    private List<CategoryArticle> categoryArticles; ;
+    private List<CategoryArticle> categoryArticles;
 
+    public CategoryResponse toResponse() {
+        return new CategoryResponse(this.id, this.categoryName, this.amountOfArticle, this.createdAt, this.updatedAt, categoryArticles);
+    }
 }
