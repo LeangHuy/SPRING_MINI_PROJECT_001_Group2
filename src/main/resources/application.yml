@@ -3,3 +3,7 @@ spring:
     name: mini-project
   profiles:
     active: huy
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    doc-expansion: false
