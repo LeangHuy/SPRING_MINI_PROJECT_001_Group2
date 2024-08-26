@@ -29,6 +29,7 @@ public class FileController {
 
     private final FileService fileService;
 
+    @Operation(summary = "Upload file")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, value = "/upload")
     public ResponseEntity<?> uploadFile(@RequestParam MultipartFile file) throws IOException {
         String filename = fileService.saveFile(file);
@@ -50,6 +51,7 @@ public class FileController {
 
 
 
+    @Operation(summary = "Get all files")
     @GetMapping("file")
     public ResponseEntity<?> getFile(@RequestParam String filename) throws IOException {
         Resource resource = fileService.findFile(filename);

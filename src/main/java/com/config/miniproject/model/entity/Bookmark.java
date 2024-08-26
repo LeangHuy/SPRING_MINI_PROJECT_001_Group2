@@ -1,5 +1,6 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.BookmarkResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,11 +16,13 @@ public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String status;
+    private Boolean status;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
     @ManyToOne
     private Article article;
     @ManyToOne
     private AppUser user;
+
+
 }
