@@ -37,15 +37,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleResponse createArticle(ArticleRequest articleRequest) {
         Integer userId = GetCurrentUser.userId();
+        checkRole(userId,"You are not allowed to add articles.");
         AppUser user = appUserRepository.findById(userId).orElseThrow(()->new NotFoundException("User Not Found."));
-        if (user.getRole().equalsIgnoreCase("READER")){
-            throw new ForbiddenException("You are not allowed to add articles.");
-        }
         List<Integer> categoryIdList = articleRequest.getCategoryId();
         Article article = articleRepository.save(articleRequest.toEntity(user));
-
         for (Integer categoryId : categoryIdList) {
-            Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category Not Found."));
+            Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
             CategoryArticle categoryArticle= new CategoryArticle(null, LocalDateTime.now(), LocalDateTime.now(),article,category);
             categoryArticleRepository.save(categoryArticle);
         }
@@ -71,5 +68,56 @@ public class ArticleServiceImpl implements ArticleService {
             articleWithCommentResponseList.add(articleWithCommentResponse);
         }
         return articleWithCommentResponseList;
+    }
+
+    @Override
+    public ArticleWithCommentResponse updateArticleById(Integer articleId, ArticleRequest articleRequest) {
+        ArticleWithCommentResponse  articleWithCommentResponse =  new ArticleWithCommentResponse();
+        Integer userId = GetCurrentUser.userId();
+        AppUser user = appUserRepository.findById(userId).orElseThrow(()->new NotFoundException("User Not Found."));
+        checkRole(userId,"You are not allowed to edit articles.");
+        ArticleWithCommentResponse articleResponse = getArticleById(articleId);
+        if (!articleResponse.getOwnerOfArticle().equals(userId)){
+            throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
+        }
+        Article article = articleRepository.save(articleRequest.toEntity(articleId,user,articleResponse.getCreatedAt()));
+        categoryArticleRepository.deleteAllByArticle(article);
+        for (Integer categoryId : articleRequest.getCategoryId()) {
+            Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
+            CategoryArticle categoryArticle= new CategoryArticle(null, LocalDateTime.now(), LocalDateTime.now(),article,category);
+            categoryArticleRepository.save(categoryArticle);
+        }
+        ArticleResponse articleResponse1 = article.toResponse();
+        List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
+        List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
+        articleWithCommentResponse.setCategoryIdList(categoryIdList);
+        articleWithCommentResponse.setArticleId(article.getId());
+        articleWithCommentResponse.setTitle(article.getTitle());
+        articleWithCommentResponse.setDescription(article.getDescription());
+        articleWithCommentResponse.setCreatedAt(article.getCreatedAt());
+        articleWithCommentResponse.setOwnerOfArticle(articleResponse1.getOwnerOfArticle());
+        return articleWithCommentResponse;
+    }
+
+    @Override
+    public ArticleWithCommentResponse getArticleById(Integer articleId) {
+        ArticleResponse articleResponse = articleRepository.findById(articleId).orElseThrow(()->new NotFoundException("Article id "+articleId+" not found.")).toResponse();
+        List<CategoryArticleResponse> categoryArticles = categoryArticleRepository.findAllByArticleId(articleId).stream().map(CategoryArticle::toResponse).toList();
+        ArticleWithCommentResponse articleWithCommentResponse = new ArticleWithCommentResponse();
+        List<Integer> categoryIdList = categoryArticles.stream().map(CategoryArticleResponse::getCategoryId).toList();
+        articleWithCommentResponse.setCategoryIdList(categoryIdList);
+        articleWithCommentResponse.setArticleId(articleResponse.getArticleId());
+        articleWithCommentResponse.setTitle(articleResponse.getTitle());
+        articleWithCommentResponse.setDescription(articleResponse.getDescription());
+        articleWithCommentResponse.setCreatedAt(articleResponse.getCreatedAt());
+        articleWithCommentResponse.setOwnerOfArticle(articleResponse.getOwnerOfArticle());
+        return articleWithCommentResponse;
+    }
+
+    public void checkRole(Integer userId,String message){
+        AppUser user = appUserRepository.findById(userId).orElseThrow(()->new NotFoundException("User Not Found."));
+        if (user.getRole().equalsIgnoreCase("READER")){
+            throw new ForbiddenException(message);
+        }
     }
 }

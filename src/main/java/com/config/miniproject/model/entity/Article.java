@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@ToString
 @Entity(name = "article_tb")
 public class Article {
     @Id

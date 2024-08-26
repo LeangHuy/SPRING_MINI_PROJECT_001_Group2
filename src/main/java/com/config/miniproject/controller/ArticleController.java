@@ -57,4 +57,30 @@ public class ArticleController {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/article/{articleId}")
+    @Operation(summary = "Get article by id.")
+    public ResponseEntity<ApiResponse<ArticleWithCommentResponse>> getArticleById(@PathVariable Integer articleId){
+        ApiResponse<ArticleWithCommentResponse> response = ApiResponse.<ArticleWithCommentResponse>builder()
+                .message("Get article with id "+articleId+" successfully.")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .payload(articleService.getArticleById(articleId))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/author/article/{articleId}")
+    @Operation(summary = "Edit article by id.")
+    public ResponseEntity<ApiResponse<ArticleWithCommentResponse>> updateArticleById(@Valid @RequestBody ArticleRequest articleRequest, @PathVariable Integer articleId) {
+        ApiResponse<ArticleWithCommentResponse> response = ApiResponse.<ArticleWithCommentResponse>builder()
+                .message("Update article with id "+articleId+" successfully.")
+                .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .payload(articleService.updateArticleById(articleId,articleRequest))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

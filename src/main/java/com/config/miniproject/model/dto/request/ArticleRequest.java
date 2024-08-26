@@ -29,4 +29,10 @@ public class ArticleRequest {
         return new Article(null, this.title, this.description,
                 createdAt, updatedAt, user, null, null, null);
     }
+
+    public Article toEntity(Integer articleId,AppUser user,LocalDateTime createdAt) {
+        LocalDateTime updatedAt = LocalDateTime.now();
+        return new Article(articleId, this.title, this.description,
+                createdAt, updatedAt, user, null, null, null);
+    }
 }

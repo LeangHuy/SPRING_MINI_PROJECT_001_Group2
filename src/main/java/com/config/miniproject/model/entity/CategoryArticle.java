@@ -25,7 +25,7 @@ public class CategoryArticle {
     private Category category;
 
     public CategoryArticleResponse toResponse() {
-        return new CategoryArticleResponse(this.id,this.category.getId(),this.article.getId());
+        return new CategoryArticleResponse(this.id,this.category.getId(),this.article.getId(),this.getCreatedAt());
     }
 
 }

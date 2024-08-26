@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@ToString
 @Entity(name = "category_tb")
 public class Category {
     @Id
