@@ -73,6 +73,17 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Integer id) {
-        categoryRepository.deleteById(id);
+
+        Integer userId = GetCurrentUser.userId();
+        AppUser user = appUserRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
+
+        if (user.getRole().equalsIgnoreCase("READER")) {
+            throw new ForbiddenException("You don't have permission");
+        }
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        categoryRepository.delete(category);
     }
 }
