@@ -17,7 +17,7 @@ public class CategoryArticle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer  id;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
     @ManyToOne
     private Article article;
     @ManyToOne

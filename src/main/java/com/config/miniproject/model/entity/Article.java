@@ -1,9 +1,10 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.ArticleResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -18,8 +19,8 @@ public class Article {
     private Integer id;
     private String title;
     private String description;
-    private LocalDate createdAt = LocalDate.now();
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     @ManyToOne
     private AppUser user;
     @OneToMany(mappedBy = "article")
@@ -29,4 +30,7 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> comments;
 
+    public ArticleResponse toResponse(){
+        return new ArticleResponse(this.id, this.title, this.description, this.createdAt, this.user.getId());
+    }
 }
