@@ -1,9 +1,11 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.ArticleResponse;
+import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -11,6 +13,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
+@ToString
 @Entity(name = "article_tb")
 public class Article {
     @Id
@@ -18,15 +21,22 @@ public class Article {
     private Integer id;
     private String title;
     private String description;
-    private LocalDate createdAt = LocalDate.now();
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     @ManyToOne
     private AppUser user;
     @OneToMany(mappedBy = "article")
+    @ToString.Exclude
     private List<CategoryArticle> categoryArticles;
     @OneToMany(mappedBy = "article")
+    @ToString.Exclude
     private List<Bookmark> bookmarks;
     @OneToMany(mappedBy = "article")
+    @ToString.Exclude
     private List<Comment> comments;
+
+    public ArticleResponse toResponse(){
+        return new ArticleResponse(this.id, this.title, this.description, this.createdAt, this.user.getId());
+    }
 
 }
