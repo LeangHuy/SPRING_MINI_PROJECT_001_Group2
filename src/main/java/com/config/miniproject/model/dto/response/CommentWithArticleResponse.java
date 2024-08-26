@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Builder
-@ToString
-public class ArticleResponse {
-    private Integer articleId;
-    private String title;
-    private String description;
+public class CommentWithArticleResponse {
+    private Integer commentId;
+    private String comment;
     private LocalDateTime createdAt;
-    private Integer ownerOfArticle;
+    private AppUserResponse user;
 }

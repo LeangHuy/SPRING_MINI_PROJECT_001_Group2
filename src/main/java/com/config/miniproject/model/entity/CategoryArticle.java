@@ -1,9 +1,9 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.CategoryArticleResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@ToString
 @Entity(name = "categories_articles")
 public class CategoryArticle {
     @Id
@@ -22,5 +23,9 @@ public class CategoryArticle {
     private Article article;
     @ManyToOne
     private Category category;
+
+    public CategoryArticleResponse toResponse() {
+        return new CategoryArticleResponse(this.id,this.category.getId(),this.article.getId());
+    }
 
 }
