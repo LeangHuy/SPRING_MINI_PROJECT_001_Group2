@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@ToString
 @Entity(name = "bookmark_tb")
 public class Bookmark {
     @Id
@@ -23,6 +24,10 @@ public class Bookmark {
     private Article article;
     @ManyToOne
     private AppUser user;
+
+    public BookmarkResponse toResponse(){
+        return new BookmarkResponse(this.id,this.article.getId());
+    }
 
 
 }

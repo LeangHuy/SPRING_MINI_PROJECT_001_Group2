@@ -16,4 +16,5 @@ public class ArticleResponse {
     private String description;
     private LocalDateTime createdAt;
     private Integer ownerOfArticle;
+
 }

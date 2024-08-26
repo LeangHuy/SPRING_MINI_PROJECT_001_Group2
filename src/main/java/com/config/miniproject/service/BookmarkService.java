@@ -1,15 +1,16 @@
 package com.config.miniproject.service;
 
-import com.config.miniproject.model.dto.request.BookmarkRequest;
+import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
 import com.config.miniproject.model.entity.Bookmark;
-import com.config.miniproject.repository.BookmarkRepository;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 public interface BookmarkService {
 
     Bookmark createBookmark(Integer ArticleId);
 
-    Bookmark getAllBookmarks(Integer page, Integer size, String sortBy, Sort.Direction orderBy);
+    List<ArticleWithCommentResponse> getAllBookmarks(Integer pageNo, Integer pageSize, String sortBy, Sort.Direction sortDirection);
 
     void updateBookmarked(Integer id);
 }

@@ -19,5 +19,6 @@ public class ApiResponse<T>{
     private Integer statusCode;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T payload;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime timestamp;
 }

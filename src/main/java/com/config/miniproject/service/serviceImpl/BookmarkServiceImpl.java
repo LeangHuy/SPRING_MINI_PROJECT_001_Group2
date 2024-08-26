@@ -2,7 +2,8 @@ package com.config.miniproject.service.serviceImpl;
 
 
 import com.config.miniproject.exception.NotFoundException;
-import com.config.miniproject.model.dto.request.BookmarkRequest;
+import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
+import com.config.miniproject.model.dto.response.BookmarkResponse;
 import com.config.miniproject.model.entity.AppUser;
 import com.config.miniproject.model.entity.Article;
 import com.config.miniproject.model.entity.Bookmark;
@@ -12,6 +13,7 @@ import com.config.miniproject.repository.ArticleRepository;
 import com.config.miniproject.repository.BookmarkRepository;
 import com.config.miniproject.service.BookmarkService;
 import com.config.miniproject.utils.GetCurrentUser;
+import com.config.miniproject.utils.UserUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -32,7 +36,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public Bookmark createBookmark( Integer ArticleId) {
         Article article = articleRepository.findById(ArticleId).orElseThrow(
-                () -> new NotFoundException("article id is not found !!! ")
+                () -> new NotFoundException("article" + ArticleId + "is not found")
         );
          Bookmark bookmark = new Bookmark();
          bookmark.setArticle(article);
@@ -45,9 +49,21 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public Bookmark getAllBookmarks(Integer page, Integer size, String sortBy, Sort.Direction orderBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy, sortBy));
-        Page<Bookmark> bookmarks = bookmarkRepository.findAll(pageable);
+    public List<ArticleWithCommentResponse> getAllBookmarks(Integer pageNo, Integer pageSize, String sortBy, Sort.Direction sortDirection) {
+        Integer userId = GetCurrentUser.userId();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortDirection, sortBy));
+        List<BookmarkResponse> bookmarkPage = bookmarkRepository.findAllByUserId(pageable,userId).getContent().stream().map(Bookmark::toResponse).toList();
+        for (BookmarkResponse bookmarkResponse : bookmarkPage) {
+
+            System.out.println(bookmarkResponse.getArticleId());
+        }
+//        List<ArticleWithCommentResponse> artile = new ArrayList<>();
+//        for(BookmarkResponse bookmarkResponse : bookmark) {
+//            artile.add(new ArticleWithCommentResponse(
+//                    bookmarkResponse.setId(bookmarkResponse.getId()),
+//                    bookmarkResponse.setArticle(bookmarkResponse.getArticle());
+//            ));
+//        }
         return null;
     }
 

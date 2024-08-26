@@ -1,21 +1,20 @@
 package com.config.miniproject.controller;
 
 
-import com.config.miniproject.model.dto.ApiResponse;
-import com.config.miniproject.model.dto.request.BookmarkRequest;
+import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
 import com.config.miniproject.model.entity.Bookmark;
 import com.config.miniproject.service.BookmarkService;
+import com.config.miniproject.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 @RequestMapping("/api/v1/bookmark")
@@ -30,28 +29,30 @@ public class BookmarkController {
     @Operation(summary = "Bookmark an article.")
     @PostMapping("/{ArticleId}")
     public ResponseEntity<?> postBookMark( Integer ArticleId){
-        Bookmark bookmark = bookmarkService.createBookmark(ArticleId);
+        bookmarkService.createBookmark(ArticleId);
         ApiResponse<?> response = ApiResponse.builder()
                 .message("article has been bookmarked successfully")
                 .status(HttpStatus.OK)
                 .build();
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 
     @GetMapping
     @Operation(summary = "Get all bookmarked articles.")
-    public ResponseEntity<?> getBookMark(
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
+    public ResponseEntity<ApiResponse<List<ArticleWithCommentResponse>>> getBookMark(
+            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(required = false, defaultValue = "articleId") String sortBy,
-            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction orderBy
+            @RequestParam Sort.Direction sortDirection
     ){
-        Bookmark bookmark = bookmarkService.getAllBookmarks(page, size, sortBy, orderBy);
-        ApiResponse<?> response = ApiResponse.builder()
+
+        ApiResponse<List<ArticleWithCommentResponse>> response = ApiResponse.<List<ArticleWithCommentResponse>>builder()
                 .message("Get all bookmarked articles successfully")
                 .status(HttpStatus.OK)
+                .statusCode(HttpStatus.OK.value())
+                .payload(bookmarkService.getAllBookmarks(pageNo, pageSize, sortBy, sortDirection))
+                .timestamp(LocalDateTime.now())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
