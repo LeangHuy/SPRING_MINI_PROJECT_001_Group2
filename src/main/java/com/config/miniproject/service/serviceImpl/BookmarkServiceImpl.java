@@ -1,6 +1,7 @@
 package com.config.miniproject.service.serviceImpl;
 
 
+import com.config.miniproject.exception.BadRequestException;
 import com.config.miniproject.exception.NotFoundException;
 import com.config.miniproject.model.dto.response.ArticleResponse;
 import com.config.miniproject.model.dto.response.BookmarkResponse;
@@ -32,9 +33,16 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public Bookmark createBookmark( Integer ArticleId) {
+        Integer userId = GetCurrentUser.userId();
         Article article = articleRepository.findById(ArticleId).orElseThrow(
                 () -> new NotFoundException("article" + ArticleId + "is not found")
         );
+        List<BookmarkResponse> bookmarkResponseList = bookmarkRepository.findAllByUserId(userId).stream().map(Bookmark::toResponse).toList();
+        for (BookmarkResponse bookmarkResponse : bookmarkResponseList) {
+            if (bookmarkResponse.getArticleId().equals(ArticleId)) {
+                throw new BadRequestException("Bookmark article id "+bookmarkResponse.getArticleId()+" already exist");
+            }
+        }
          Bookmark bookmark = new Bookmark();
          bookmark.setArticle(article);
          bookmark.setUser(appUserRepository.getAppUserById(GetCurrentUser.userId()));
@@ -48,7 +56,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public List<ArticleResponse> getAllBookmarks(Integer pageNo, Integer pageSize, String sortBy, Sort.Direction sortDirection) {
         Integer userId = GetCurrentUser.userId();
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortDirection, sortBy));
+        Pageable pageable = PageRequest.of(pageNo-1, pageSize, Sort.by(sortDirection, sortBy));
         List<ArticleResponse> articleResponseList = new ArrayList<>();
         List<BookmarkResponse> bookmarkPage = bookmarkRepository.findAllByUserId(pageable,userId).getContent().stream().map(Bookmark::toResponse).toList();
         for (BookmarkResponse bookmarkResponse : bookmarkPage) {

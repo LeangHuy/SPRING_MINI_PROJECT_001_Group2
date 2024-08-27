@@ -36,6 +36,12 @@ public class ArticleServiceImpl implements ArticleService {
         checkRole(userId,"You are not allowed to add articles.");
         AppUser user = appUserRepository.findById(userId).orElseThrow(()->new NotFoundException("User Not Found."));
         List<Integer> categoryIdList = articleRequest.getCategoryId();
+        for (Integer categoryId : categoryIdList) {
+            Category checkOwnCategory = categoryRepository.findByIdAndUserId(categoryId,userId);
+            if (checkOwnCategory == null) {
+                throw new NotFoundException("Category id "+categoryId+" Not Found.");
+            }
+        }
         Article article = articleRepository.save(articleRequest.toEntity(user));
         for (Integer categoryId : categoryIdList) {
             Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
@@ -91,6 +97,12 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleResponse articleById = getArticleById(articleId);
         if (!articleById.getOwnerOfArticle().equals(userId)){
             throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
+        }
+        for (Integer categoryId : articleRequest.getCategoryId()) {
+            Category checkOwnCategory = categoryRepository.findByIdAndUserId(categoryId,userId);
+            if (checkOwnCategory == null) {
+                throw new NotFoundException("Category id "+categoryId+" Not Found.");
+            }
         }
         Article article = articleRepository.save(articleRequest.toEntity(articleId,user,articleById.getCreatedAt()));
         categoryArticleRepository.deleteAllByArticle(article);

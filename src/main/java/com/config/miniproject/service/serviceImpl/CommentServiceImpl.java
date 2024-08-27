@@ -7,7 +7,6 @@ import com.config.miniproject.model.dto.response.AppUserResponse;
 import com.config.miniproject.model.dto.response.CommentWithArticleResponse;
 import com.config.miniproject.model.entity.AppUser;
 import com.config.miniproject.model.entity.Comment;
-import com.config.miniproject.repository.AppUserRepository;
 import com.config.miniproject.repository.CommentRepository;
 import com.config.miniproject.service.CommentService;
 import com.config.miniproject.utils.GetCurrentUser;
@@ -19,13 +18,14 @@ import org.springframework.stereotype.Service;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final AppUserRepository appUserRepository;
 
     @Override
     public CommentWithArticleResponse getCommentById(Integer id) {
-        Comment comment =commentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Comment id " + id + " not found"));
-
+        Integer userId = GetCurrentUser.userId();
+        Comment comment = commentRepository.findByIdAndUserId(id, userId);
+        if (comment == null) {
+            throw new NotFoundException("Comment id " + id + " not found.");
+        }
         AppUser user = comment.getUser();
         AppUserResponse userResponse = user.toResponse();
         return comment.toCommentResponse(userResponse);
