@@ -13,13 +13,13 @@ public class UserUtils {
         this.appUserRepository = appUserRepository;
     }
 
-    public AppUser getCurrentUserAndCheckRole(String requiredRole) {
+    public AppUser getCurrentUserAndCheckRole(String requiredRole,String message) {
         Integer userId = GetCurrentUser.userId();
         AppUser user = appUserRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found."));
 
         if (user.getRole().equalsIgnoreCase(requiredRole)) {
-            throw new ForbiddenException("You don't have permission");
+            throw new ForbiddenException(message);
         }
 
         return user;

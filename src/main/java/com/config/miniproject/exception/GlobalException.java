@@ -1,5 +1,7 @@
 package com.config.miniproject.exception;
 
+import com.config.miniproject.utils.ApiResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;

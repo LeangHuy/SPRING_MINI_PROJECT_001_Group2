@@ -1,15 +1,16 @@
 package com.config.miniproject.service.serviceImpl;
 
+import com.config.miniproject.exception.ForbiddenException;
 import com.config.miniproject.exception.NotFoundException;
 import com.config.miniproject.model.dto.request.CommentRequest;
-import com.config.miniproject.model.dto.response.CommentResponse;
+import com.config.miniproject.model.dto.response.AppUserResponse;
+import com.config.miniproject.model.dto.response.CommentWithArticleResponse;
 import com.config.miniproject.model.entity.AppUser;
-import com.config.miniproject.model.entity.Category;
 import com.config.miniproject.model.entity.Comment;
 import com.config.miniproject.repository.AppUserRepository;
 import com.config.miniproject.repository.CommentRepository;
 import com.config.miniproject.service.CommentService;
-import com.config.miniproject.utils.UserUtils;
+import com.config.miniproject.utils.GetCurrentUser;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,36 +22,47 @@ public class CommentServiceImpl implements CommentService {
     private final AppUserRepository appUserRepository;
 
     @Override
-    public CommentResponse getCommentById(Integer id) {
-        UserUtils userUtils = new UserUtils(appUserRepository);
-        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
+    public CommentWithArticleResponse getCommentById(Integer id) {
+        Comment comment =commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Comment id " + id + " not found"));
 
-        return commentRepository.findById(id).orElseThrow().toResponse();
+        AppUser user = comment.getUser();
+        AppUserResponse userResponse = user.toResponse();
+        return comment.toCommentResponse(userResponse);
     }
 
     @Override
     public void deleteComment(Integer id) {
-        UserUtils userUtils = new UserUtils(appUserRepository);
-        AppUser user = userUtils.getCurrentUserAndCheckRole("READER");
 
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Comment not found"));
+                .orElseThrow(() -> new NotFoundException("Comment id " + id + " not found"));
+
+        Integer currentUserId = GetCurrentUser.userId();
+
+        if (!comment.getUser().getId().equals(currentUserId)) {
+            throw new ForbiddenException("You don't have permission to delete this comment");
+        }
 
         commentRepository.delete(comment);
     }
 
     @Override
-    public CommentResponse updateComment(Integer id, CommentRequest commentRequest) {
-        UserUtils userUtils = new UserUtils(appUserRepository);
-        AppUser appUser = userUtils.getCurrentUserAndCheckRole("READER");
+    public CommentWithArticleResponse updateComment(Integer id, CommentRequest commentRequest) {
 
         Comment editComment = commentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Comment not found"));
+                .orElseThrow(() -> new NotFoundException("Comment id " + id + " not found"));
+
+        Integer currentUserId = GetCurrentUser.userId();
+        if (!editComment.getUser().getId().equals(currentUserId)) {
+            throw new ForbiddenException("You don't have permission to update this comment");
+        }
 
         editComment.setCmt(commentRequest.getComment());
-
         Comment comment = commentRepository.save(editComment);
 
-        return comment.toResponse();
+        AppUser user = comment.getUser();
+        AppUserResponse userResponse = user.toResponse();
+
+        return comment.toCommentResponse(userResponse);
     }
 }

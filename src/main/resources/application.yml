@@ -2,7 +2,7 @@ spring:
   application:
     name: mini-project
   profiles:
-    active: sreykhouch
+    active: huy
 springdoc:
   swagger-ui:
     tags-sorter: alpha

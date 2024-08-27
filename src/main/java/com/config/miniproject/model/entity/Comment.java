@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@ToString
 @Entity(name = "comment_tb")
 public class Comment {
     @Id
@@ -25,10 +26,6 @@ public class Comment {
     private Article article;
     @ManyToOne
     private AppUser user;
-
-    public CommentResponse toResponse() {
-        return new CommentResponse(this.id, this.cmt, this.createdAt, this.updatedAt, this.article, this.user);
-    }
 
     public CommentWithArticleResponse toCommentResponse(AppUserResponse userResponse) {
         return new CommentWithArticleResponse(this.id, this.cmt, this.createdAt, userResponse);
