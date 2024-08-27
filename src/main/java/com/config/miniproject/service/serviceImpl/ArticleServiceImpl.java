@@ -44,6 +44,7 @@ public class ArticleServiceImpl implements ArticleService {
             categoryArticleRepository.save(categoryArticle);
             //count
             Integer countArticle = categoryArticleRepository.countAllByCategoryId(categoryId);
+            //update
             CategoryRequest categoryRequest = new CategoryRequest();
             categoryRequest.setCategoryName(category.getCategoryName());
             categoryRepository.save(categoryRequest.toEntity(categoryId,countArticle,category.getUser(),category.getCreatedAt()));
@@ -97,6 +98,12 @@ public class ArticleServiceImpl implements ArticleService {
             Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
             CategoryArticle categoryArticle= new CategoryArticle(null, LocalDateTime.now(), LocalDateTime.now(),article,category);
             categoryArticleRepository.save(categoryArticle);
+            //count
+            Integer countArticle = categoryArticleRepository.countAllByCategoryId(categoryId);
+            //update
+            CategoryRequest categoryRequest = new CategoryRequest();
+            categoryRequest.setCategoryName(category.getCategoryName());
+            categoryRepository.save(categoryRequest.toEntity(categoryId,countArticle,category.getUser(),category.getCreatedAt()));
         }
         ArticleResponse articleResponse1 = article.toResponse();
         Article articleC = articleRepository.findById(articleId).orElseThrow();
@@ -145,6 +152,15 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
         }
         getArticleById(articleId);
+        for (Integer categoryId : articleResponse.getCategoryIdList()){
+            //count
+            Integer countArticle = categoryArticleRepository.countAllByCategoryId(categoryId);
+            Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
+            //update
+            CategoryRequest categoryRequest = new CategoryRequest();
+            categoryRequest.setCategoryName(category.getCategoryName());
+            categoryRepository.save(categoryRequest.toEntity(categoryId,countArticle-1,category.getUser(),category.getCreatedAt()));
+        }
         articleRepository.deleteById(articleId);
     }
 
