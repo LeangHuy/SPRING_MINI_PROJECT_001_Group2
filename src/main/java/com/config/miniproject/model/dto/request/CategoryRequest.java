@@ -30,4 +30,9 @@ public class CategoryRequest {
         LocalDateTime updatedAt = LocalDateTime.now();
         return new Category(null, this.categoryName, 0, createdAt, updatedAt, appUser, null);
     }
+
+    public Category toEntity(Integer categoryId, Integer amount, AppUser appUser, LocalDateTime createdAt) {
+        LocalDateTime updatedAt = LocalDateTime.now();
+        return new Category(categoryId, this.categoryName, amount, createdAt, updatedAt, appUser, null);
+    }
 }

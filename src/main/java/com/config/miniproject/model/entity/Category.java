@@ -30,6 +30,7 @@ public class Category {
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
     private List<CategoryArticle> categoryArticles;
 
+
     public CategoryResponse toResponse() {
         return new CategoryResponse(this.id, this.categoryName, this.createdAt);
     }
