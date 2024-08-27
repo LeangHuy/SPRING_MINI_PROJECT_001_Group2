@@ -42,7 +42,7 @@ public class CategoryController {
     @GetMapping("/all")
     @Operation(summary = "Get all categories")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategory(
-            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "ASC") Sort.Direction orderBy
