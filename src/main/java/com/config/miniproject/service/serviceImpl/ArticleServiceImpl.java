@@ -3,6 +3,7 @@ package com.config.miniproject.service.serviceImpl;
 import com.config.miniproject.exception.ForbiddenException;
 import com.config.miniproject.exception.NotFoundException;
 import com.config.miniproject.model.dto.request.ArticleRequest;
+import com.config.miniproject.model.dto.request.CategoryRequest;
 import com.config.miniproject.model.dto.request.CommentRequest;
 import com.config.miniproject.model.dto.response.*;
 import com.config.miniproject.model.entity.*;
@@ -38,8 +39,14 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleRepository.save(articleRequest.toEntity(user));
         for (Integer categoryId : categoryIdList) {
             Category category = categoryRepository.findById(categoryId).orElseThrow(()->new NotFoundException("Category id "+categoryId+" not found."));
+            //insert middle table
             CategoryArticle categoryArticle= new CategoryArticle(null, LocalDateTime.now(), LocalDateTime.now(),article,category);
             categoryArticleRepository.save(categoryArticle);
+            //count
+            Integer countArticle = categoryArticleRepository.countAllByCategoryId(categoryId);
+            CategoryRequest categoryRequest = new CategoryRequest();
+            categoryRequest.setCategoryName(category.getCategoryName());
+            categoryRepository.save(categoryRequest.toEntity(categoryId,countArticle,category.getUser(),category.getCreatedAt()));
         }
         return article.toResponse();
     }
@@ -137,7 +144,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (!articleResponse.getOwnerOfArticle().equals(userId)){
             throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
         }
-//        getArticleById(articleId);
+        getArticleById(articleId);
         articleRepository.deleteById(articleId);
     }
 
