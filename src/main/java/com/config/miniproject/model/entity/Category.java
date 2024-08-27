@@ -27,7 +27,7 @@ public class Category {
     private LocalDateTime updatedAt;
     @ManyToOne
     private AppUser user;
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
     private List<CategoryArticle> categoryArticles;
 
     public CategoryResponse toResponse() {

@@ -137,7 +137,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (!articleResponse.getOwnerOfArticle().equals(userId)){
             throw new ForbiddenException("Cannot delete/update not found article id "+articleId);
         }
-        getArticleById(articleId);
+//        getArticleById(articleId);
         articleRepository.deleteById(articleId);
     }
 
