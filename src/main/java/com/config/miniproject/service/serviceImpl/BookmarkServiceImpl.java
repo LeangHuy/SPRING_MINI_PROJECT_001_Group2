@@ -76,5 +76,3 @@ public class BookmarkServiceImpl implements BookmarkService {
         bookmarkRepository.save(bookmark);
     }
 }
-
-

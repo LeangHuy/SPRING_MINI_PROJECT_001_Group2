@@ -80,8 +80,10 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category id " + id + " not found"));
+
         List<CategoryArticle> categoryArticleList = categoryArticleRepository.findAllByCategoryId(id);
         ArticleResponse articleResponse = null;
+
         for (CategoryArticle categoryArticle : categoryArticleList){
             articleResponse = articleServiceImpl.getArticleById(categoryArticle.getArticle().getId());
         }
