@@ -16,5 +16,6 @@ public interface CategoryArticleRepository extends JpaRepository<CategoryArticle
     @Transactional
     void deleteAllByArticle(Article article);
 
+    List<CategoryArticle> findAllByCategoryId(Integer categoryId);
     Integer countAllByCategoryId(Integer categoryId);
 }

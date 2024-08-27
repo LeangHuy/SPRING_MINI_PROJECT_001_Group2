@@ -1,5 +1,6 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.ArticleResponse;
 import com.config.miniproject.model.dto.response.CategoryResponse;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -31,7 +33,9 @@ public class Category {
     private List<CategoryArticle> categoryArticles;
 
 
-    public CategoryResponse toResponse() {
-        return new CategoryResponse(this.id, this.categoryName, this.amountOfArticle, this.createdAt);
+    public CategoryResponse toResponse(ArticleResponse articleResponse) {
+        List<ArticleResponse> articleResponseList = new ArrayList<>();
+        articleResponseList.add(articleResponse);
+        return new CategoryResponse(this.id, this.categoryName, this.amountOfArticle, this.createdAt,this.updatedAt,articleResponseList);
     }
 }
