@@ -32,6 +32,6 @@ public class Category {
     private List<CategoryArticle> categoryArticles;
 
     public CategoryResponse toResponse() {
-        return new CategoryResponse(this.id, this.categoryName, this.createdAt);
+        return new CategoryResponse(this.id, this.categoryName, this.amountOfArticle, this.createdAt);
     }
 }

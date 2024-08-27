@@ -7,6 +7,7 @@ import com.config.miniproject.model.entity.AppUser;
 import com.config.miniproject.model.entity.Category;
 import com.config.miniproject.model.entity.Comment;
 import com.config.miniproject.repository.AppUserRepository;
+import com.config.miniproject.repository.CategoryRepository;
 import com.config.miniproject.repository.CommentRepository;
 import com.config.miniproject.service.CommentService;
 import com.config.miniproject.utils.UserUtils;

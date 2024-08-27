@@ -1,7 +1,7 @@
 package com.config.miniproject.model.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.config.miniproject.model.entity.AppUser;
+import com.config.miniproject.model.entity.Comment;
 import lombok.*;
 
 @AllArgsConstructor
@@ -11,4 +11,8 @@ import lombok.*;
 @Setter
 public class CommentRequest {
     private String cmt;
+
+    public Comment toEntity(AppUser user) {
+        return new Comment(null, this.cmt, null, null, null, user);
+    }
 }

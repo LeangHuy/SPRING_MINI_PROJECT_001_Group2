@@ -9,4 +9,6 @@ public interface CommentService {
     void deleteComment(Integer id);
 
     CommentResponse updateComment(Integer id, CommentRequest commentRequest);
+
+//    CommentResponse createComment(Integer id, CommentRequest commentRequest);
 }

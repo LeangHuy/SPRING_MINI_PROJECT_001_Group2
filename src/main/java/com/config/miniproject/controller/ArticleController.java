@@ -1,10 +1,14 @@
 package com.config.miniproject.controller;
 
 import com.config.miniproject.model.dto.request.ArticleRequest;
+import com.config.miniproject.model.dto.request.CommentRequest;
 import com.config.miniproject.model.dto.response.ArticleResponse;
 import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
+import com.config.miniproject.model.dto.response.CategoryResponse;
+import com.config.miniproject.model.dto.response.CommentResponse;
 import com.config.miniproject.model.enumaration.EArticle;
 import com.config.miniproject.service.ArticleService;
+import com.config.miniproject.service.CommentService;
 import com.config.miniproject.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,6 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ArticleController {
     private final ArticleService articleService;
+    private final CommentService commentService;
 
     @PostMapping("/author/article")
     @Operation(summary = "Create a new article")
