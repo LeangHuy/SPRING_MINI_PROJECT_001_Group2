@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class ApiResponse<T>{
     private String message;
     private HttpStatus status;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer statusCode;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T payload;

@@ -1,7 +1,8 @@
 package com.config.miniproject.controller;
 
 
-import com.config.miniproject.model.dto.response.ArticleWithCommentResponse;
+import com.config.miniproject.model.dto.response.ArticleResponse;
+import com.config.miniproject.model.dto.response.CommentWithArticleResponse;
 import com.config.miniproject.model.entity.Bookmark;
 import com.config.miniproject.service.BookmarkService;
 import com.config.miniproject.utils.ApiResponse;
@@ -34,20 +35,20 @@ public class BookmarkController {
                 .message("article has been bookmarked successfully")
                 .status(HttpStatus.OK)
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
 
     @GetMapping
     @Operation(summary = "Get all bookmarked articles.")
-    public ResponseEntity<ApiResponse<List<ArticleWithCommentResponse>>> getBookMark(
+    public ResponseEntity<ApiResponse<List<ArticleResponse>>> getBookMark(
             @RequestParam(required = false, defaultValue = "0") Integer pageNo,
             @RequestParam(required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(required = false, defaultValue = "articleId") String sortBy,
             @RequestParam Sort.Direction sortDirection
     ){
 
-        ApiResponse<List<ArticleWithCommentResponse>> response = ApiResponse.<List<ArticleWithCommentResponse>>builder()
+        ApiResponse<List<ArticleResponse>> response = ApiResponse.<List<ArticleResponse>>builder()
                 .message("Get all bookmarked articles successfully")
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
@@ -55,7 +56,7 @@ public class BookmarkController {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/article/{id}")
@@ -67,7 +68,7 @@ public class BookmarkController {
                 .message(" an Article with id "+ id + " is unmarked successfully")
                 .status(HttpStatus.OK)
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
 

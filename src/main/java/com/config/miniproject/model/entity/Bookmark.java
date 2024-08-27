@@ -26,7 +26,7 @@ public class Bookmark {
     private AppUser user;
 
     public BookmarkResponse toResponse(){
-        return new BookmarkResponse(this.id,this.article.getId());
+        return new BookmarkResponse(this.id,this.article.getId(),  this.updatedAt);
     }
 
 

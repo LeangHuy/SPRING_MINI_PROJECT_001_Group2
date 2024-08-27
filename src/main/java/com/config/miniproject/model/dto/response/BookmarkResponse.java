@@ -1,9 +1,9 @@
 package com.config.miniproject.model.dto.response;
 
 
-import com.config.miniproject.model.entity.AppUser;
-import com.config.miniproject.model.entity.Article;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,5 +13,6 @@ import lombok.*;
 public class BookmarkResponse {
     private Integer id;
     private Integer articleId;
+    private LocalDateTime updatedAt;
 
 }
