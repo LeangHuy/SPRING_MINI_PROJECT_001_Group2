@@ -13,6 +13,7 @@ import com.config.miniproject.repository.ArticleRepository;
 import com.config.miniproject.repository.CategoryArticleRepository;
 import com.config.miniproject.repository.CategoryRepository;
 import com.config.miniproject.service.CategoryService;
+import com.config.miniproject.utils.GetCurrentUser;
 import com.config.miniproject.utils.UserUtils;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -90,12 +91,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse updateCategory(Integer id, CategoryRequest categoryRequest) {
-
+        Integer userId = GetCurrentUser.userId();
         UserUtils userUtils = new UserUtils(appUserRepository);
-        AppUser user = userUtils.getCurrentUserAndCheckRole("READER","You are not allowed to update category.");
+        userUtils.getCurrentUserAndCheckRole("READER","You are not allowed to update category.");
 
         Category editCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category id " + id + " not found"));
+        List<Category> findCategoryByAuthorId = categoryRepository.findAllByUserId(userId);
+        if (findCategoryByAuthorId.isEmpty()) {
+            throw new BadRequestException("Cannot delete/update not found article id "+id);
+        }
 
         editCategory.setCategoryName(categoryRequest.getCategoryName());
 
@@ -110,13 +115,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Integer id) {
-
+        Integer userId = GetCurrentUser.userId();
         UserUtils userUtils = new UserUtils(appUserRepository);
-        AppUser user = userUtils.getCurrentUserAndCheckRole("READER","You are not allowed to delete category.");
+        userUtils.getCurrentUserAndCheckRole("READER","You are not allowed to delete category.");
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category " + id + " not found"));
-
+        List<Category> findCategoryByAuthorId = categoryRepository.findAllByUserId(userId);
+        if (findCategoryByAuthorId.isEmpty()) {
+            throw new BadRequestException("Cannot delete/update not found article id "+id);
+        }
         categoryRepository.delete(category);
     }
 }
