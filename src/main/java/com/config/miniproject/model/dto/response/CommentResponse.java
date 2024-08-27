@@ -15,7 +15,5 @@ public class CommentResponse {
     private Integer id;
     private String cmt;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt;
-    private Article article;
     private AppUser user;
 }
