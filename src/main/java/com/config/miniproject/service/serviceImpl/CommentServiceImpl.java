@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
         Comment editComment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Comment not found"));
 
-        editComment.setCmt(commentRequest.getCmt());
+        editComment.setCmt(commentRequest.getComment());
 
         Comment comment = commentRepository.save(editComment);
 
