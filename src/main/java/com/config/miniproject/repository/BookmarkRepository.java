@@ -14,4 +14,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark,Integer> {
 
     Bookmark findBookmarkByArticleIdAndUserId (Integer articleId, Integer userId);
     Page<Bookmark> findAllByUserId(Pageable pageable, Integer userId);
+    List<Bookmark> findAllByUserId(Integer userId);
 }

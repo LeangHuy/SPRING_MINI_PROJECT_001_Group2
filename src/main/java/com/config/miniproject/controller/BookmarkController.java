@@ -2,8 +2,6 @@ package com.config.miniproject.controller;
 
 
 import com.config.miniproject.model.dto.response.ArticleResponse;
-import com.config.miniproject.model.dto.response.CommentWithArticleResponse;
-import com.config.miniproject.model.entity.Bookmark;
 import com.config.miniproject.service.BookmarkService;
 import com.config.miniproject.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +27,7 @@ public class BookmarkController {
 
     @Operation(summary = "Bookmark an article.")
     @PostMapping("/{ArticleId}")
-    public ResponseEntity<?> postBookMark( Integer ArticleId){
+    public ResponseEntity<?> postBookMark(@PathVariable Integer ArticleId){
         bookmarkService.createBookmark(ArticleId);
         ApiResponse<?> response = ApiResponse.builder()
                 .message("article has been bookmarked successfully")
@@ -42,7 +40,7 @@ public class BookmarkController {
     @GetMapping
     @Operation(summary = "Get all bookmarked articles.")
     public ResponseEntity<ApiResponse<List<ArticleResponse>>> getBookMark(
-            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
+            @RequestParam(required = false, defaultValue = "1") Integer pageNo,
             @RequestParam(required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(required = false, defaultValue = "articleId") String sortBy,
             @RequestParam Sort.Direction sortDirection
