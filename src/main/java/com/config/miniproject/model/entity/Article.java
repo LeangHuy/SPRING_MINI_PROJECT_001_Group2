@@ -23,14 +23,11 @@ public class Article {
     private LocalDateTime updatedAt;
     @ManyToOne
     private AppUser user;
-    @OneToMany
-    @ToString.Exclude
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<CategoryArticle> categoryArticles;
-    @OneToMany
-    @ToString.Exclude
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks;
-    @OneToMany
-    @ToString.Exclude
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     public ArticleResponse toResponse(){
