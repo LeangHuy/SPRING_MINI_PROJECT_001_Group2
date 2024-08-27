@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@ToString
 @Entity(name = "user_tb")
 public class AppUser implements UserDetails {
     @Id

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
 @Builder
 public class CommentWithArticleResponse {
     private Integer commentId;

@@ -1,6 +1,8 @@
 package com.config.miniproject.model.entity;
 
+import com.config.miniproject.model.dto.response.AppUserResponse;
 import com.config.miniproject.model.dto.response.CommentResponse;
+import com.config.miniproject.model.dto.response.CommentWithArticleResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,5 +28,9 @@ public class Comment {
 
     public CommentResponse toResponse() {
         return new CommentResponse(this.id, this.cmt, this.createdAt, this.updatedAt, this.article, this.user);
+    }
+
+    public CommentWithArticleResponse toCommentResponse(AppUserResponse userResponse) {
+        return new CommentWithArticleResponse(this.id, this.cmt, this.createdAt, userResponse);
     }
 }
