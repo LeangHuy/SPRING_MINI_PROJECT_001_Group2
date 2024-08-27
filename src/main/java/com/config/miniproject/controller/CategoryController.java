@@ -7,6 +7,7 @@ import com.config.miniproject.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class CategoryController {
 
     @GetMapping("{id}")
     @Operation(summary = "Get category by its id")
-    public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(@PathVariable @Positive Integer id) {
         CategoryResponse response = categoryService.getCategoryById(id);
         ApiResponse<CategoryResponse> apiResponse = ApiResponse.<CategoryResponse>builder()
                 .status(HttpStatus.OK)
@@ -74,7 +75,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     @Operation(summary = "Update category by id")
     public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(
-            @PathVariable Integer id,
+            @PathVariable @Positive Integer id,
             @Valid
             @RequestBody CategoryRequest categoryRequest) {
 
@@ -93,7 +94,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category by its id")
-    public ResponseEntity<ApiResponse<String>> deleteCategory(@PathVariable("id") Integer id) {
+    public ResponseEntity<ApiResponse<String>> deleteCategory(@PathVariable("id") @Positive Integer id) {
         categoryService.deleteCategory(id);
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .message("Category with id " + id + " is deleted successfully.")
