@@ -35,7 +35,9 @@ public class Category {
 
     public CategoryResponse toResponse(ArticleResponse articleResponse) {
         List<ArticleResponse> articleResponseList = new ArrayList<>();
-        articleResponseList.add(articleResponse);
+        if (articleResponse != null) {
+            articleResponseList.add(articleResponse);
+        }
         return new CategoryResponse(this.id, this.categoryName, this.amountOfArticle, this.createdAt,this.updatedAt,articleResponseList);
     }
 }

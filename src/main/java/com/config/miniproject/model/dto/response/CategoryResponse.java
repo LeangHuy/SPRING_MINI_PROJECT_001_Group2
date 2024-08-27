@@ -19,7 +19,7 @@ public class CategoryResponse {
     private Integer amountOfArticle;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<ArticleResponse> articleList;
 
 }
